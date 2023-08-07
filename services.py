@@ -1,9 +1,11 @@
 import io
 from itertools import groupby
-
+from decouple import config
 import pandas as pd
 import requests
 from fastapi import UploadFile, File
+
+url = config('ostatki_url')
 
 
 async def parse_excel(bom: UploadFile = File(...)) -> dict:
@@ -19,7 +21,7 @@ async def parse_excel(bom: UploadFile = File(...)) -> dict:
 
 def get_remains() -> dict:
     # from collections import defaultdict
-    remains = requests.get('http://10.10.2.180:5001/ostatki.json').json()
+    remains = requests.get(url).json()
     dict_list = [{'articul': d['artukul'], 'quantity': int(d['quantity'])} for d in remains]
     # res_dict = defaultdict(int)
     # for dictionary in dict_list:
