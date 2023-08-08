@@ -1,34 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FastAPI Frontend</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/style.css">
+    <title>Расчет ресурсов</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1>FastAPI Frontend</h1>
-        <form action="/show_tables" method="post" enctype="multipart/form-data">
-            <input type="file" name="bom" required>
-            <button type="submit">Submit BOM</button>
+    <div class="container mt-4">
+        <h1>Cuman</h1>
+
+        <form method="post" action="/select_calc" enctype="multipart/form-data" id="calcForm">
+            <div class="form-group">
+                <label for="fileInput">Выберите файл ВОМ:</label>
+                <input type="file" class="form-control-file" id="fileInput" name="file" required>
+            </div>
+
+            <div class="form-group">
+                <label for="optionSelect">Выберите тип расчета:</label>
+                <select class="form-control" id="optionSelect" name="calc_type">
+                    <option value="Расчет за одну единицу">Расчет за одну единицу</option>
+                    <option value="Расчет на макс. кол-во единиц на каждый артикул">Расчет на макс. кол-во единиц на каждый артикул</option>
+                    <option value="Расчет макс. кол-ва суммарно">Расчет макс. кол-ва суммарно</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Отправить</button>
         </form>
-        <div id="result"></div>
+    </div>
+
+    <div class="container mt-4">
+        <h2>Результат расчета</h2>
+        <div id="resultContainer">
+            <!-- Results will be displayed here as a table -->
+        </div>
     </div>
 
     <script>
-        document.querySelector('form').addEventListener('submit', async (event) => {
+        document.getElementById("calcForm").addEventListener("submit", function (event) {
             event.preventDefault();
-            const formData = new FormData(event.target);
-            const response = await fetch('/show_tables', {
-                method: 'POST',
+
+            var formData = new FormData();
+            var calcType = document.getElementById("optionSelect").value;
+            var docInput = document.getElementById("fileInput").files[0];
+
+            formData.append("doc", docInput);
+
+            fetch("/select_calc?calc_type=" + encodeURIComponent(calcType), {
+                method: "POST",
                 body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response data here
+                var resultContainer = document.getElementById("resultContainer");
+                resultContainer.innerHTML = createTable(data); // Create and display the table
+            })
+            .catch(error => {
+                // Handle any errors here
+                console.error("Error:", error);
             });
-            const data = await response.text();
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = data;
         });
+
+        function createTable(data) {
+            var table = "<table class='table'><thead><tr><th>Артикул</th><th>Остатки Micronic</th></tr></thead><tbody>";
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+                    table += "<tr><td>" + key + "</td><td>" + data[key] + "</td></tr>";
+                }
+            }
+            table += "</tbody></table>";
+            return table;
+        }
     </script>
 </body>
 </html>
