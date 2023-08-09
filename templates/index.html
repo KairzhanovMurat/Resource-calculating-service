@@ -18,9 +18,9 @@
             <div class="form-group">
                 <label for="optionSelect">Выберите тип расчета:</label>
                 <select class="form-control" id="optionSelect" name="calc_type">
-                    <option value="Расчет за одну единицу">Расчет за одну единицу</option>
-                    <option value="Расчет на макс. кол-во единиц на каждый артикул">Расчет на макс. кол-во единиц на каждый артикул</option>
-                    <option value="Расчет макс. кол-ва суммарно">Расчет макс. кол-ва суммарно</option>
+                    <option value="one_unit">Расчет за одну единицу</option>
+                    <option value="max_units_for_all_articuls">Расчет на макс. кол-во единиц на каждый артикул</option>
+                    <option value="max_units_total">Расчет макс. кол-ва суммарно</option>
                 </select>
             </div>
 
@@ -62,10 +62,10 @@
         });
 
         function createTable(data) {
-            var table = "<table class='table'><thead><tr><th>Артикул</th><th>Остатки Micronic</th></tr></thead><tbody>";
+            var table = "<table class='table'><thead><tr><th>Артикул</th><th>1С</th><th>Micronic</th></tr></thead><tbody>";
             for (var key in data) {
                 if (data.hasOwnProperty(key)) {
-                    table += "<tr><td>" + key + "</td><td>" + data[key] + "</td></tr>";
+                    table += "<tr><td>" + key + "</td><td>" + data[key]["1C"] + "</td><td>" + data[key]["Micronic"] + "</td></tr>";
                 }
             }
             table += "</tbody></table>";
